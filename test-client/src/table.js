@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery } from '@apollo/client';
 
 function Table(props){
-    const {loading, error, data} = useQuery(props.srchData);
+    const {loading, error, data} = useQuery(props.readData);
     if(loading) return 'Loading...';
     if(error) return `Error ${error.message}`;
     const len = data.queryMusic.length;

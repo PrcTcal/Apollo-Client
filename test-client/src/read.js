@@ -1,75 +1,28 @@
 import React, {Component} from 'react';
-import { gql } from '@apollo/client';
-import Table from './table';
-import { ApolloProvider} from '@apollo/client';
-import {ApolloClient, InMemoryCache } from '@apollo/client';
 
-
-const client = new ApolloClient({
-    uri: 'http://localhost:4000',
-    cache: new InMemoryCache()
-  });
 
 class Read extends Component{
     constructor(props){
         super(props);
-        this.state = {
-            Artist: '',
-            songTitle: '',
-            actv: '',
-            idx: '',
-            stype: '',
-            dir: '',
-            and: ''
-        };
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleSubmit(event) {
-        this.setState({Artist: document.getElementById('srchArtist').value});
-        this.setState({songTitle: document.getElementById('srchSongTitle').value});
-        this.setState({actv: document.getElementById('srchActv').value});
-        this.setState({idx: document.getElementById('srchIdx').value});
-        this.setState({stype: document.getElementById('stype').value});
-        this.setState({dir: document.getElementById('dir').value});
-        this.setState({and: document.getElementById('and').value});
         event.preventDefault();
+        this.props.handleReadChange(
+            document.getElementById('srchArtist').value,
+            document.getElementById('srchSongTitle').value,
+            document.getElementById('srchActv').value,
+            document.getElementById('srchIdx').value,
+            document.getElementById('stype').value,
+            document.getElementById('dir').value,
+            document.getElementById('and').value
+        );
     }
 
 
     render(){
-        const srchData = gql`
-        query {
-            queryMusic(
-            ${this.state.Artist !== '' ? 'Artist: "' + this.state.Artist + '"' : ''},
-            ${this.state.songTitle !== '' ? 'songTitle: "' + this.state.songTitle + '"' : ''},
-            ${this.state.actv !== '' ? 'actv:' + this.state.actv : ''},
-            ${this.state.idx !== '' ? 'idx:' + this.state.idx : ''},
-            settings: {
-                ${this.state.stype !== '' ? 'stype: ' + this.state.stype : ''},
-                ${this.state.dir !== '' ? 'dir: ' + this.state.dir : ''},
-                ${this.state.and !== '' ? 'and: ' + this.state.and : ''}
-            }
-            ){
-            id,
-            info{
-                ... on Artist{
-                hometown,
-                birth
-                }
-                ... on Song{
-                album,
-                release
-                }
-            },
-            Artist,
-            songTitle,
-            actv,
-            idx
-            }
-        }`;
         return (
-            <div>
                 <form className="srchForm" onSubmit={this.handleSubmit}>
                     <div>
                         <input type="text" name="Artist"   id="srchArtist" placeholder="Artist"/>
@@ -102,11 +55,7 @@ class Read extends Component{
                         </select>
                     </div>
                     <button type="submit">search</button>
-                </form>
-                <div id="space">
-                    <ApolloProvider client={client}><Table srchData={srchData}/></ApolloProvider>
-                </div>
-            </div>  
+                </form>       
         );
     }
 }
