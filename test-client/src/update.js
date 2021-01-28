@@ -1,11 +1,12 @@
 import React from 'react';
 import { gql, useMutation } from '@apollo/client';
 
-function Create(props) {       
-    let Artist, songTitle, infoType, infoA, infoB, actv, idx;
-    const createData = gql`
-    mutation CreateMusic($Artist:String!, $songTitle:String, $info:infoInput, $actv:Boolean, $idx: Int){
-        createMusic(
+function Update(props) {   
+    let identifier, Artist, songTitle, infoType, infoA, infoB, actv, idx;
+    const updateData = gql`
+    mutation UpdateMusic($id:String!, $Artist:String, $songTitle:String, $info:infoInput, $actv:Boolean, $idx: Int){
+        updateMusic(
+            id: $id,
             Artist: $Artist,
             songTitle: $songTitle,
             info: $info,
@@ -30,32 +31,24 @@ function Create(props) {
             }
       }
     `;
-    const [addTodo, {data}] = useMutation(createData,{
-        update(cache, {data}) {
-            cache.writeQuery({
-                query: props.readData,
-                data: {
-                    settings: props.settings
-                }
-            });
-        }
-    });
+    const [updateTodo] = useMutation(updateData);
     return (
             <form className="srchForm" onSubmit={e => {
                 e.preventDefault();
-                addTodo({ variables: {
-                    Artist: Artist.value,
-                    songTitle: songTitle.value,
-                    info: infoType.value === 'album' ? { album: infoA.value, release: infoB.value } : { hometown: infoA.value, birth: infoB.value},
-                    actv: actv.value === "true" ? true : false,
-                    idx: Number(idx.value)
-                }
-            }, (err, data)=>{
-                console.log(data);
-            });
+                updateTodo({ variables: {
+                    id: identifier.value,
+                    Artist: Artist.value !== "" ? Artist.value : null,
+                    songTitle: songTitle.value !== "" ? songTitle.value : null,
+                    info: infoType.value !== "" ? infoType.value === 'album' ? { album: infoA.value, release: infoB.value } : { hometown: infoA.value, birth: infoB.value} : null,
+                    actv: actv.value !== "" ? actv.value === "true" ? true : false : null,
+                    idx: idx.value !== "" ? Number(idx.value) : null
+                }});
                 console.log(props.refresh);
                 props.reset();
             }}>
+                <div>
+                    <input ref={node => {identifier = node; }} type="text" name="identifier" id="srchId" placeholder="ID"/>
+                </div>
                 <div>
                     <input ref={node => {Artist = node; }} type="text" name="Artist"   id="srchArtist" placeholder="Artist"/>
                     <input ref={node => {songTitle = node; }} type="text" name="songTitle"  id="srchSongTitle" placeholder="songTitle"/>
@@ -77,9 +70,9 @@ function Create(props) {
                     </select>
                     <input ref={node => {idx = node; }} type="text" name="idx"  id="srchIdx" placeholder="idx"/>
                 </div>
-                <button type="submit">Create</button>
+                <button type="submit">Update</button>
             </form>       
     ); 
 }
 
-export default Create;
+export default Update;

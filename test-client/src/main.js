@@ -4,6 +4,8 @@ import { gql } from '@apollo/client';
 import Table from './table';
 import Create from './create';
 import Read from './read';
+import Update from './update';
+import Delete from './delete';
 import { ApolloProvider} from '@apollo/client';
 import {ApolloClient, InMemoryCache } from '@apollo/client';
 
@@ -14,6 +16,7 @@ const client = new ApolloClient({
   });
 
   const initialState = {
+    id: '',
     Artist: '',
     songTitle: '',
     actv: '',
@@ -23,13 +26,42 @@ const client = new ApolloClient({
     and: '',
     srchInfo:'',
     infoA:'',
-    infoB:''
+    infoB:'',
   }
+
+  const readData = gql`
+        query QueryMusic($Artist: String, $songTitle: String, $info:infoInput, $actv:Boolean, $idx: Int, $settings: Setting){
+            queryMusic(
+                Artist: $Artist,
+                songTitle: $songTitle,
+                info: $info,
+                actv: $actv,
+                idx: $idx
+                settings: $settings
+            ){
+            id,
+            info{
+                ... on Artist{
+                hometown,
+                birth
+                }
+                ... on Song{
+                album,
+                release
+                }
+            },
+            Artist,
+            songTitle,
+            actv,
+            idx
+            }
+        }`;
 
 class Main extends Component{
     constructor(props){
         super(props);
         this.state = {
+            id: '',
             Artist: '',
             songTitle: '',
             actv: '',
@@ -39,16 +71,21 @@ class Main extends Component{
             and: '',
             srchInfo: '',
             infoA:'',
-            infoB:''
+            infoB:'',
+            refresh: false
         };
         this.reset = this.reset.bind(this);
         this.addRead = this.addRead.bind(this);
         this.addCreate = this.addCreate.bind(this);
+        this.addUpdate = this.addUpdate.bind(this);
+        this.addDelete = this.addDelete.bind(this);
         this.handleCreateChange = this.handleCreateChange.bind(this);
         this.handleReadChange = this.handleReadChange.bind(this);
     }
     reset(){
-        this.setState(initialState);
+        console.log('reset : ' + this.state.refresh);
+        this.setState({refresh: !this.state.refresh});
+        //this.setState(initialState);
     }
 
     handleCreateChange(Artist, songTitle, actv, idx, srchInfo, infoA, infoB){
@@ -72,26 +109,45 @@ class Main extends Component{
     }
 
     addCreate(){
-        this.reset();
+        //this.reset();
         ReactDOM.render(
-            <Create 
+            <ApolloProvider client={client}>
+            <Create refresh={this.state.refresh} reset={this.reset} readData={readData}/>
+            </ApolloProvider>,
+            document.getElementById('form-space')
+        );
+    }
+
+    addRead(){
+        //this.reset();
+        ReactDOM.render(
+            <Read 
+                handleReadChange={this.handleReadChange}
                 reset={this.reset}
             />, 
             document.getElementById('form-space')
         );
     }
 
-    addRead(){
-        this.reset();
+    addUpdate(){
         ReactDOM.render(
-            <Read 
-                handleReadChange={this.handleReadChange}
-            />, 
+            <ApolloProvider client={client}>
+            <Update refresh={this.state.refresh} reset={this.reset} />
+            </ApolloProvider>,
             document.getElementById('form-space')
         );
     }
 
-    render(){
+    addDelete(){
+        ReactDOM.render(
+            <ApolloProvider client={client}>
+            <Delete refresh={this.state.refresh} reset={this.reset}/>
+            </ApolloProvider>,
+            document.getElementById('form-space')
+        );
+    }
+
+    render(){/*
         const readData = gql`
         query {
             queryMusic(
@@ -121,18 +177,18 @@ class Main extends Component{
             actv,
             idx
             }
-        }`;
+        }`;*/
         return (
             <div>
                 <span className="CRUD-span">
                     <button onClick={this.addCreate}>Create</button>
                     <button onClick={this.addRead}>Read</button>
-                    <button>Update</button>
-                    <button>Delete</button>
+                    <button onClick={this.addUpdate}>Update</button>
+                    <button onClick={this.addDelete}>Delete</button>
                 </span>
                 <div id="form-space"></div>
                 <div id="space">
-                    <ApolloProvider client={client}><Table readData={readData}/></ApolloProvider>
+                    <Table states={this.state} refresh={this.state.refresh} setCheck={this.setCheck} readData={readData}/>
                 </div>
             </div>  
         );

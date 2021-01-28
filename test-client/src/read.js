@@ -18,6 +18,7 @@ class Read extends Component{
             document.getElementById('dir').value,
             document.getElementById('and').value
         );
+        this.props.reset();
     }
 
 

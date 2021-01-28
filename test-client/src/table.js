@@ -1,10 +1,33 @@
 import React from "react";
 import { useQuery } from '@apollo/client';
 
+let refresh = false;
+
 function Table(props){
-    const {loading, error, data} = useQuery(props.readData);
+    const {loading, error, data, refetch} = useQuery(props.readData,{
+        variables: {
+            Artist: props.states.Artist !== "" ? props.states.Artist : null,
+            songTitle: props.states.songTitle !== "" ? props.states.songTitle : null,
+            info: props.states.srchInfo !== "" ? props.states.srchInfo === 'album' ? { album: props.states.infoA, release: props.states.infoB } : { hometown: props.states.infoA, birth: props.states.infoB} : null,
+            actv: props.states.actv !== "" ? props.states.actv === "true" ? true : false : null,
+            idx: props.states.idx !== "" ? Number(props.states.idx) : null,
+            settings: {
+                stype: props.states.stype !== "" ? props.states.stype : null,
+                dir: props.states.dir !== "" ? props.states.dir : null,
+                and: props.states.and !== "" ? props.states.and : null
+            }
+            
+        }
+    });
     if(loading) return 'Loading...';
     if(error) return `Error ${error.message}`;
+    console.log('Table: ' + refresh + ' : ' + props.refresh);
+    if(refresh !== props.refresh) {
+        console.log('refetch! : ' + props.refresh);
+        refresh = !refresh;
+        refetch();
+    }
+    
     const len = data.queryMusic.length;
     return (
         <div>
