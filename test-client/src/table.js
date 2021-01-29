@@ -1,10 +1,12 @@
 import React from "react";
 import { useQuery } from '@apollo/client';
+import { readData } from './main';
+
 
 let refresh = false;
 
 function Table(props){
-    const {loading, error, data, refetch} = useQuery(props.readData,{
+    const {loading, error, data, refetch} = useQuery(readData,{
         variables: {
             Artist: props.states.Artist !== "" ? props.states.Artist : null,
             songTitle: props.states.songTitle !== "" ? props.states.songTitle : null,
@@ -14,27 +16,25 @@ function Table(props){
             settings: {
                 stype: props.states.stype !== "" ? props.states.stype : null,
                 dir: props.states.dir !== "" ? props.states.dir : null,
-                and: props.states.and !== "" ? props.states.and : null
+                page: props.states.page,
+                and: props.states.and !== "" ? props.states.and === "true" ? true : false : null
             }
-            
         }
     });
     if(loading) return 'Loading...';
     if(error) return `Error ${error.message}`;
-    console.log('Table: ' + refresh + ' : ' + props.refresh);
-    if(refresh !== props.refresh) {
-        console.log('refetch! : ' + props.refresh);
+    if(refresh !== props.states.refresh) {
+        console.log(props.states.refresh);
         refresh = !refresh;
         refetch();
     }
+    //const len = data.queryMusic.length;
     
-    const len = data.queryMusic.length;
     return (
         <div>
             <table className="query-table">
                 <thead>
                     <tr>
-                        <th rowSpan="2">NO</th>
                         <th rowSpan="2">id</th>
                         <th rowSpan="2">Artist</th>
                         <th rowSpan="2">songTitle</th>
@@ -50,7 +50,6 @@ function Table(props){
                 <tbody>
                     {data.queryMusic.map((query, i) => (
                         <tr key={query.id}>
-                            <td>{len - i}</td>
                             <td>{query.id}</td>
                             <td>{query.Artist}</td>
                             <td>{query.songTitle}</td>

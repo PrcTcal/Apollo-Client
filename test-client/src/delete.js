@@ -1,5 +1,6 @@
 import React from 'react';
 import { gql, useMutation } from '@apollo/client';
+import { readData } from './main';
 
 function Delete(props) {   
     let identifier;
@@ -26,15 +27,25 @@ function Delete(props) {
             }
       }
     `;
-    const [deleteTodo] = useMutation(deleteData);
+    const [deleteTodo, {data}] = useMutation(deleteData,{
+        refetchQueries: [{
+            query: readData,
+            variables: {
+                settings: {
+                    stype: "idx",
+                    dir: "ASC",
+                    and: false
+                }
+            },
+        }],
+    });
+    if(data != null) props.reset();
     return (
             <form className="srchForm" onSubmit={e => {
                 e.preventDefault();
                 deleteTodo({ variables: {
                     id: identifier.value,
                 }});
-                console.log(props.refresh);
-                props.reset();
             }}>
                 <div>
                     <input ref={node => {identifier = node; }} type="text" name="identifier" id="srchId" placeholder="ID"/>

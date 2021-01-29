@@ -1,5 +1,6 @@
 import React from 'react';
 import { gql, useMutation } from '@apollo/client';
+import { readData } from './main';
 
 function Create(props) {       
     let Artist, songTitle, infoType, infoA, infoB, actv, idx;
@@ -31,15 +32,18 @@ function Create(props) {
       }
     `;
     const [addTodo, {data}] = useMutation(createData,{
-        update(cache, {data}) {
-            cache.writeQuery({
-                query: props.readData,
-                data: {
-                    settings: props.settings
+        refetchQueries: [{
+            query: readData,
+            variables: {
+                settings: {
+                    stype: "idx",
+                    dir: "ASC",
+                    and: false
                 }
-            });
-        }
+            },
+        }],
     });
+    if(data != null) props.reset();
     return (
             <form className="srchForm" onSubmit={e => {
                 e.preventDefault();
@@ -50,17 +54,13 @@ function Create(props) {
                     actv: actv.value === "true" ? true : false,
                     idx: Number(idx.value)
                 }
-            }, (err, data)=>{
-                console.log(data);
             });
-                console.log(props.refresh);
-                props.reset();
             }}>
                 <div>
                     <input ref={node => {Artist = node; }} type="text" name="Artist"   id="srchArtist" placeholder="Artist"/>
                     <input ref={node => {songTitle = node; }} type="text" name="songTitle"  id="srchSongTitle" placeholder="songTitle"/>
                 </div>
-                <div>
+                <div className="info">
                     <select ref={node => {infoType = node; }} name="infoType" id="srchInfo">
                         <option value="">info type</option>
                         <option value="album">곡 정보</option>

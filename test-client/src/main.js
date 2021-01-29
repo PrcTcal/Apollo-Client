@@ -6,30 +6,17 @@ import Create from './create';
 import Read from './read';
 import Update from './update';
 import Delete from './delete';
+import Pagination from './pagination';
 import { ApolloProvider} from '@apollo/client';
 import {ApolloClient, InMemoryCache } from '@apollo/client';
 
 
-const client = new ApolloClient({
+export const client = new ApolloClient({
     uri: 'http://localhost:4000',
     cache: new InMemoryCache()
   });
 
-  const initialState = {
-    id: '',
-    Artist: '',
-    songTitle: '',
-    actv: '',
-    idx: '',
-    stype: '',
-    dir: '',
-    and: '',
-    srchInfo:'',
-    infoA:'',
-    infoB:'',
-  }
-
-  const readData = gql`
+  export const readData = gql`
         query QueryMusic($Artist: String, $songTitle: String, $info:infoInput, $actv:Boolean, $idx: Int, $settings: Setting){
             queryMusic(
                 Artist: $Artist,
@@ -68,13 +55,16 @@ class Main extends Component{
             idx: '',
             stype: '',
             dir: '',
+            page: 1,
             and: '',
             srchInfo: '',
             infoA:'',
             infoB:'',
-            refresh: false
+            refresh: false,
+            length: 0
         };
         this.reset = this.reset.bind(this);
+        this.setPage = this.setPage.bind(this);
         this.addRead = this.addRead.bind(this);
         this.addCreate = this.addCreate.bind(this);
         this.addUpdate = this.addUpdate.bind(this);
@@ -83,9 +73,10 @@ class Main extends Component{
         this.handleReadChange = this.handleReadChange.bind(this);
     }
     reset(){
-        console.log('reset : ' + this.state.refresh);
         this.setState({refresh: !this.state.refresh});
-        //this.setState(initialState);
+    }
+    setPage(num){
+        this.setState({page: num});
     }
 
     handleCreateChange(Artist, songTitle, actv, idx, srchInfo, infoA, infoB){
@@ -109,17 +100,15 @@ class Main extends Component{
     }
 
     addCreate(){
-        //this.reset();
         ReactDOM.render(
             <ApolloProvider client={client}>
-            <Create refresh={this.state.refresh} reset={this.reset} readData={readData}/>
+            <Create reset={this.reset} />
             </ApolloProvider>,
             document.getElementById('form-space')
         );
     }
 
     addRead(){
-        //this.reset();
         ReactDOM.render(
             <Read 
                 handleReadChange={this.handleReadChange}
@@ -132,7 +121,7 @@ class Main extends Component{
     addUpdate(){
         ReactDOM.render(
             <ApolloProvider client={client}>
-            <Update refresh={this.state.refresh} reset={this.reset} />
+            <Update reset={this.reset} />
             </ApolloProvider>,
             document.getElementById('form-space')
         );
@@ -141,43 +130,13 @@ class Main extends Component{
     addDelete(){
         ReactDOM.render(
             <ApolloProvider client={client}>
-            <Delete refresh={this.state.refresh} reset={this.reset}/>
+            <Delete reset={this.reset}/>
             </ApolloProvider>,
             document.getElementById('form-space')
         );
     }
 
-    render(){/*
-        const readData = gql`
-        query {
-            queryMusic(
-            ${this.state.Artist !== '' ? 'Artist: "' + this.state.Artist + '"' : ''},
-            ${this.state.songTitle !== '' ? 'songTitle: "' + this.state.songTitle + '"' : ''},
-            ${this.state.actv !== '' ? 'actv:' + this.state.actv : ''},
-            ${this.state.idx !== '' ? 'idx:' + this.state.idx : ''},
-            settings: {
-                ${this.state.stype !== '' ? 'stype: ' + this.state.stype : ''},
-                ${this.state.dir !== '' ? 'dir: ' + this.state.dir : ''},
-                ${this.state.and !== '' ? 'and: ' + this.state.and : ''}
-            }
-            ){
-            id,
-            info{
-                ... on Artist{
-                hometown,
-                birth
-                }
-                ... on Song{
-                album,
-                release
-                }
-            },
-            Artist,
-            songTitle,
-            actv,
-            idx
-            }
-        }`;*/
+    render(){
         return (
             <div>
                 <span className="CRUD-span">
@@ -188,7 +147,8 @@ class Main extends Component{
                 </span>
                 <div id="form-space"></div>
                 <div id="space">
-                    <Table states={this.state} refresh={this.state.refresh} setCheck={this.setCheck} readData={readData}/>
+                    <Table states={this.state} />
+                    <Pagination page={this.state.page} setPage={this.setPage}/>
                 </div>
             </div>  
         );

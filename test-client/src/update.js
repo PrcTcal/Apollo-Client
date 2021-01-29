@@ -1,5 +1,6 @@
 import React from 'react';
 import { gql, useMutation } from '@apollo/client';
+import { readData } from './main';
 
 function Update(props) {   
     let identifier, Artist, songTitle, infoType, infoA, infoB, actv, idx;
@@ -31,7 +32,19 @@ function Update(props) {
             }
       }
     `;
-    const [updateTodo] = useMutation(updateData);
+    const [updateTodo, { data }] = useMutation(updateData,{
+        refetchQueries: [{
+            query: readData,
+            variables: {
+                settings: {
+                    stype: "idx",
+                    dir: "ASC",
+                    and: false
+                }
+            },
+        }],
+    });
+    if(data != null) props.reset();
     return (
             <form className="srchForm" onSubmit={e => {
                 e.preventDefault();
@@ -43,8 +56,7 @@ function Update(props) {
                     actv: actv.value !== "" ? actv.value === "true" ? true : false : null,
                     idx: idx.value !== "" ? Number(idx.value) : null
                 }});
-                console.log(props.refresh);
-                props.reset();
+                
             }}>
                 <div>
                     <input ref={node => {identifier = node; }} type="text" name="identifier" id="srchId" placeholder="ID"/>
@@ -53,7 +65,7 @@ function Update(props) {
                     <input ref={node => {Artist = node; }} type="text" name="Artist"   id="srchArtist" placeholder="Artist"/>
                     <input ref={node => {songTitle = node; }} type="text" name="songTitle"  id="srchSongTitle" placeholder="songTitle"/>
                 </div>
-                <div>
+                <div className="info">
                     <select ref={node => {infoType = node; }} name="infoType" id="srchInfo">
                         <option value="">info type</option>
                         <option value="album">곡 정보</option>
