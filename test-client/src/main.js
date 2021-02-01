@@ -6,7 +6,6 @@ import Create from './create';
 import Read from './read';
 import Update from './update';
 import Delete from './delete';
-import Pagination from './pagination';
 import { ApolloProvider} from '@apollo/client';
 import {ApolloClient, InMemoryCache } from '@apollo/client';
 
@@ -61,7 +60,6 @@ class Main extends Component{
             infoA:'',
             infoB:'',
             refresh: false,
-            length: 0
         };
         this.reset = this.reset.bind(this);
         this.initPage = this.initPage.bind(this);
@@ -152,8 +150,7 @@ class Main extends Component{
                 </span>
                 <div id="form-space"></div>
                 <div id="space">
-                    <Table states={this.state} setPage={this.setPage} />
-                    <Pagination page={this.state.page} setPage={this.setPage}/>
+                    <Table states={this.state} setPage={this.setPage}  />
                 </div>
             </div>  
         );

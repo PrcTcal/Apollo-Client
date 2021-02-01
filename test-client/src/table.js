@@ -1,11 +1,12 @@
 import React from "react";
 import { useQuery } from '@apollo/client';
 import { readData } from './main';
-
+import Pagination from './pagination';
 
 let refresh = false;
 
 function Table(props){
+    
     const {loading, error, data, refetch} = useQuery(readData,{
         variables: {
             Artist: props.states.Artist !== "" ? props.states.Artist : null,
@@ -16,20 +17,16 @@ function Table(props){
             settings: {
                 stype: props.states.stype !== "" ? props.states.stype : null,
                 dir: props.states.dir !== "" ? props.states.dir : null,
-                page: props.states.page,
                 and: props.states.and !== "" ? props.states.and === "true" ? true : false : null
             }
         }
-    });
-    if(loading) return 'Loading...';
-    if(error) return `Error ${error.message}`;
-    if(data.queryMusic.length === 0 && props.states.page > 1) props.setPage(props.states.page - 1);
+    });        
+    if(loading) return 'Loading...'; 
+    if(error) return `Error ${error.message}`; 
     if(refresh !== props.states.refresh) {
-        console.log('fetch');
         refresh = !refresh;
         refetch();
     }
-    //const len = data.queryMusic.length;
     
     if(data.queryMusic.length === 0 && props.states.page === 1){
         return (
@@ -63,6 +60,7 @@ function Table(props){
                 <table className="query-table">
                     <thead>
                         <tr>
+                            <th rowSpan="2">no</th>
                             <th rowSpan="2">id</th>
                             <th rowSpan="2">Artist</th>
                             <th rowSpan="2">songTitle</th>
@@ -77,7 +75,9 @@ function Table(props){
                     </thead>
                     <tbody>
                         {data.queryMusic.map((query, i) => (
+                            i < props.states.page * 5  && i >= (props.states.page - 1) * 5? 
                             <tr key={query.id}>
+                                <td>{i}</td>
                                 <td>{query.id}</td>
                                 <td>{query.Artist}</td>
                                 <td>{query.songTitle}</td>
@@ -86,9 +86,14 @@ function Table(props){
                                 <td>{query.info.album ? query.info.album : query.info.hometown}</td>
                                 <td>{query.info.release ? query.info.release : query.info.birth}</td>
                             </tr>
+                            :
+                            null
                         ))}
                     </tbody>
                 </table>
+                <Pagination page={props.states.page} setPage={props.setPage} length={
+                    data.queryMusic.length % 5 === 0 ? parseInt(data.queryMusic.length / 5) : parseInt(data.queryMusic.length / 5) + 1
+                }/>
             </div>
         );
     }

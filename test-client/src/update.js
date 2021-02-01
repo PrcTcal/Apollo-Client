@@ -44,7 +44,6 @@ function Update(props) {
                 settings: {
                     stype: props.states.stype !== "" ? props.states.stype : null,
                     dir: props.states.dir !== "" ? props.states.dir : null,
-                    page: props.states.page,
                     and: props.states.and !== "" ? props.states.and === "true" ? true : false : null
                 }
             },
@@ -57,7 +56,6 @@ function Update(props) {
     return (
             <form className="srchForm" onSubmit={e => {
                 e.preventDefault();
-                console.log(identifier.value);
                 if(identifier.value === '') {
                     alert('ID를 입력해주세요');
                 } else if(Artist.value === '' && songTitle.value === '' && infoType.value === '' && infoA.value === '' && infoB.value === '' && actv.value === '' && idx.value === '') {

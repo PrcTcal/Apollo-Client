@@ -39,7 +39,6 @@ function Delete(props) {
                 settings: {
                     stype: props.states.stype !== "" ? props.states.stype : null,
                     dir: props.states.dir !== "" ? props.states.dir : null,
-                    page: props.states.page,
                     and: props.states.and !== "" ? props.states.and === "true" ? true : false : null
                 }
             },
