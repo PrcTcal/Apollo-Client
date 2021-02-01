@@ -19,6 +19,7 @@ class Read extends Component{
             document.getElementById('and').value
         );
         this.props.reset();
+        this.props.initPage();
     }
 
 
@@ -30,27 +31,27 @@ class Read extends Component{
                         <input type="text" name="songTitle"  id="srchSongTitle" placeholder="songTitle"/>
                     </div>
                     <div>
-                        <select name="actv" id="srchActv">
-                            <option value="" selected>actv</option>
+                        <select defaultValue="" name="actv" id="srchActv">
+                            <option value="">actv</option>
                             <option value="true">True</option>
                             <option value="false">False</option>
                         </select>
                         <input type="text" name="idx"  id="srchIdx" placeholder="idx"/>
                     </div>
                     <div>
-                        <select name="stype" id="stype" className="settings">
-                            <option value="" selected>정렬 기준</option>
+                        <select defaultValue="" name="stype" id="stype" className="settings">
+                            <option value="">정렬 기준</option>
                             <option value="Artist">Artist</option>
                             <option value="songTitle">songTitle</option>
                             <option value="idx">idx</option>
                         </select>
-                        <select name="dir"   id="dir" className="settings">
-                            <option value="" selected>정렬 순서</option>
+                        <select name="dir" defaultValue=""  id="dir" className="settings">
+                            <option value="">정렬 순서</option>
                             <option value="ASC">ASC</option>
                             <option value="DESC">DESC</option>
                         </select>
-                        <select name="and"  id="and" className="settings">
-                            <option value="" selected>And/Or</option>
+                        <select name="and" defaultValue="" id="and" className="settings">
+                            <option value="">And/Or</option>
                             <option value="true">AND</option>
                             <option value="false">OR</option>
                         </select>

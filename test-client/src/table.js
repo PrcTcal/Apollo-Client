@@ -23,46 +23,76 @@ function Table(props){
     });
     if(loading) return 'Loading...';
     if(error) return `Error ${error.message}`;
+    if(data.queryMusic.length === 0 && props.states.page > 1) props.setPage(props.states.page - 1);
     if(refresh !== props.states.refresh) {
-        console.log(props.states.refresh);
+        console.log('fetch');
         refresh = !refresh;
         refetch();
     }
     //const len = data.queryMusic.length;
     
-    return (
-        <div>
-            <table className="query-table">
-                <thead>
-                    <tr>
-                        <th rowSpan="2">id</th>
-                        <th rowSpan="2">Artist</th>
-                        <th rowSpan="2">songTitle</th>
-                        <th rowSpan="2">actv</th>
-                        <th rowSpan="2">idx</th>
-                        <th colSpan="2">info</th>
-                    </tr>
-                    <tr>
-                        <th>album | hometown</th>
-                        <th>release | birth</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.queryMusic.map((query, i) => (
-                        <tr key={query.id}>
-                            <td>{query.id}</td>
-                            <td>{query.Artist}</td>
-                            <td>{query.songTitle}</td>
-                            <td>{query.actv ? 'True' : 'false'}</td>
-                            <td>{query.idx}</td>
-                            <td>{query.info.album ? query.info.album : query.info.hometown}</td>
-                            <td>{query.info.release ? query.info.release : query.info.birth}</td>
+    if(data.queryMusic.length === 0 && props.states.page === 1){
+        return (
+            <div>
+                <table className="query-table">
+                    <thead>
+                        <tr>
+                            <th rowSpan="2">id</th>
+                            <th rowSpan="2">Artist</th>
+                            <th rowSpan="2">songTitle</th>
+                            <th rowSpan="2">actv</th>
+                            <th rowSpan="2">idx</th>
+                            <th colSpan="2">info</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
+                        <tr>
+                            <th>album | hometown</th>
+                            <th>release | birth</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colSpan="7">데이터가 존재하지 않습니다.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        );
+    } else {
+        return (
+            <div>
+                <table className="query-table">
+                    <thead>
+                        <tr>
+                            <th rowSpan="2">id</th>
+                            <th rowSpan="2">Artist</th>
+                            <th rowSpan="2">songTitle</th>
+                            <th rowSpan="2">actv</th>
+                            <th rowSpan="2">idx</th>
+                            <th colSpan="2">info</th>
+                        </tr>
+                        <tr>
+                            <th>album | hometown</th>
+                            <th>release | birth</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {data.queryMusic.map((query, i) => (
+                            <tr key={query.id}>
+                                <td>{query.id}</td>
+                                <td>{query.Artist}</td>
+                                <td>{query.songTitle}</td>
+                                <td>{query.actv ? 'True' : 'false'}</td>
+                                <td>{query.idx}</td>
+                                <td>{query.info.album ? query.info.album : query.info.hometown}</td>
+                                <td>{query.info.release ? query.info.release : query.info.birth}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
+    
 }
 
 export default Table;

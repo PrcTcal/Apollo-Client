@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { gql, useMutation } from '@apollo/client';
 import { readData } from './main';
 
@@ -36,27 +36,42 @@ function Update(props) {
         refetchQueries: [{
             query: readData,
             variables: {
+                Artist: props.states.Artist !== "" ? props.states.Artist : null,
+                songTitle: props.states.songTitle !== "" ? props.states.songTitle : null,
+                info: props.states.srchInfo !== "" ? props.states.srchInfo === 'album' ? { album: props.states.infoA, release: props.states.infoB } : { hometown: props.states.infoA, birth: props.states.infoB} : null,
+                actv: props.states.actv !== "" ? props.states.actv === "true" ? true : false : null,
+                idx: props.states.idx !== "" ? Number(props.states.idx) : null,
                 settings: {
-                    stype: "idx",
-                    dir: "ASC",
-                    and: false
+                    stype: props.states.stype !== "" ? props.states.stype : null,
+                    dir: props.states.dir !== "" ? props.states.dir : null,
+                    page: props.states.page,
+                    and: props.states.and !== "" ? props.states.and === "true" ? true : false : null
                 }
             },
         }],
     });
-    if(data != null) props.reset();
+    useEffect(() => {
+        if(data != null) props.reset();
+    });
+    //if(data != null) props.reset();
     return (
             <form className="srchForm" onSubmit={e => {
                 e.preventDefault();
-                updateTodo({ variables: {
-                    id: identifier.value,
-                    Artist: Artist.value !== "" ? Artist.value : null,
-                    songTitle: songTitle.value !== "" ? songTitle.value : null,
-                    info: infoType.value !== "" ? infoType.value === 'album' ? { album: infoA.value, release: infoB.value } : { hometown: infoA.value, birth: infoB.value} : null,
-                    actv: actv.value !== "" ? actv.value === "true" ? true : false : null,
-                    idx: idx.value !== "" ? Number(idx.value) : null
-                }});
-                
+                console.log(identifier.value);
+                if(identifier.value === '') {
+                    alert('ID를 입력해주세요');
+                } else if(Artist.value === '' && songTitle.value === '' && infoType.value === '' && infoA.value === '' && infoB.value === '' && actv.value === '' && idx.value === '') {
+                    alert('업데이트할 필드를 하나 이상 지정해주세요.');
+                } else {
+                    updateTodo({ variables: {
+                        id: identifier.value,
+                        Artist: Artist.value !== "" ? Artist.value : null,
+                        songTitle: songTitle.value !== "" ? songTitle.value : null,
+                        info: infoType.value !== "" ? infoType.value === 'album' ? { album: infoA.value, release: infoB.value } : { hometown: infoA.value, birth: infoB.value} : null,
+                        actv: actv.value !== "" ? actv.value === "true" ? true : false : null,
+                        idx: idx.value !== "" ? Number(idx.value) : null
+                    }});
+                }    
             }}>
                 <div>
                     <input ref={node => {identifier = node; }} type="text" name="identifier" id="srchId" placeholder="ID"/>
@@ -66,7 +81,7 @@ function Update(props) {
                     <input ref={node => {songTitle = node; }} type="text" name="songTitle"  id="srchSongTitle" placeholder="songTitle"/>
                 </div>
                 <div className="info">
-                    <select ref={node => {infoType = node; }} name="infoType" id="srchInfo">
+                    <select ref={node => {infoType = node; }} defaultValue="" name="infoType" id="srchInfo">
                         <option value="">info type</option>
                         <option value="album">곡 정보</option>
                         <option value="hometown">가수 정보</option>
@@ -75,7 +90,7 @@ function Update(props) {
                     <input ref={node => {infoB = node; }} type="text" name="infoB" id="infoB" placeholder="release / birth"/>
                  </div>
                 <div>
-                    <select ref={node => {actv = node; }} name="actv" id="srchActv">
+                    <select ref={node => {actv = node; }} defaultValue="" name="actv" id="srchActv">
                         <option value="">actv</option>
                         <option value="true">True</option>
                         <option value="false">False</option>

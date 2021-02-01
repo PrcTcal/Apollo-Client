@@ -64,6 +64,7 @@ class Main extends Component{
             length: 0
         };
         this.reset = this.reset.bind(this);
+        this.initPage = this.initPage.bind(this);
         this.setPage = this.setPage.bind(this);
         this.addRead = this.addRead.bind(this);
         this.addCreate = this.addCreate.bind(this);
@@ -74,6 +75,9 @@ class Main extends Component{
     }
     reset(){
         this.setState({refresh: !this.state.refresh});
+    }
+    initPage(){
+        this.setState({page: 1});
     }
     setPage(num){
         this.setState({page: num});
@@ -102,7 +106,7 @@ class Main extends Component{
     addCreate(){
         ReactDOM.render(
             <ApolloProvider client={client}>
-            <Create reset={this.reset} />
+            <Create states={this.state} reset={this.reset} />
             </ApolloProvider>,
             document.getElementById('form-space')
         );
@@ -113,6 +117,7 @@ class Main extends Component{
             <Read 
                 handleReadChange={this.handleReadChange}
                 reset={this.reset}
+                initPage={this.initPage}
             />, 
             document.getElementById('form-space')
         );
@@ -121,7 +126,7 @@ class Main extends Component{
     addUpdate(){
         ReactDOM.render(
             <ApolloProvider client={client}>
-            <Update reset={this.reset} />
+            <Update states={this.state} reset={this.reset} />
             </ApolloProvider>,
             document.getElementById('form-space')
         );
@@ -130,7 +135,7 @@ class Main extends Component{
     addDelete(){
         ReactDOM.render(
             <ApolloProvider client={client}>
-            <Delete reset={this.reset}/>
+            <Delete states={this.state} reset={this.reset}/>
             </ApolloProvider>,
             document.getElementById('form-space')
         );
@@ -147,7 +152,7 @@ class Main extends Component{
                 </span>
                 <div id="form-space"></div>
                 <div id="space">
-                    <Table states={this.state} />
+                    <Table states={this.state} setPage={this.setPage} />
                     <Pagination page={this.state.page} setPage={this.setPage}/>
                 </div>
             </div>  

@@ -15,13 +15,11 @@ class Pagination extends Component{
         
         return (
             <ul>
-                <li onClick={() => {
-                    console.log(this.props.page);
+                <li className="paging" id="prev" onClick={() => {
                     if(this.props.page > 1) this.props.setPage(this.props.page - 1);
                 }}>Prev</li>
-                <li onClick={() => { 
-                    console.log(this.props.page);
-                    if(this.props.page < 3) this.props.setPage(this.props.page + 1);
+                <li className="paging" id="next" onClick={() => { 
+                    this.props.setPage(this.props.page + 1);
                 }}>Next</li>
             </ul>
         );
